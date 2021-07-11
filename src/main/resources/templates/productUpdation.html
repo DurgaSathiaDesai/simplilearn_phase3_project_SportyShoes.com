@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Update Product</title>
+<style th:inline="text">
+
+body{
+    background: url([[@{/images/shoesinnerbg.png}]]);            
+    background-size: cover;
+}
+
+textarea {
+  resize: none;
+}
+
+.container {
+        height: 500px;
+        width : 1000px;
+        margin: 0 auto;
+        margin-top: 100px;
+        border: 2px solid;
+        background-color: white;
+        align-self: center;
+        border-radius: 25px;
+    }
+    
+    label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#back
+ {
+	 margin-top: 50px;
+ 	margin-right: 200px;
+ }
+    
+</style>
+<script th:inline="javascript">
+function setmsg()
+{
+	/* var errormsg ="[(${error})]";
+	document.getElementById("error").innerHTML = errormsg; */
+	document.getElementById("custType").value = "[(${product.custType})]";
+	/* document.getElementById("category").value = "[(${product.getPcategory().getCategoryname()})]";
+	document.getElementById("color").value = "[(${product.getPcolor().getColorname()})]";
+	
+	document.getElementById("size").value = "[(${product.getPsizes()})]"; */
+	 var cat = "[(${product.getPcategory().getCategoryId()})]";
+	options = Array.from(document.querySelectorAll('#category option'));
+	options.find(c => c.value == cat).selected = true;
+	
+	var col = "[(${product.getPcolor().getColorId()})]";
+	options = Array.from(document.querySelectorAll('#color option'));
+	options.find(c => c.value == col).selected = true;
+	
+	var values = "[(${sizes})]";
+    options = Array.from(document.querySelectorAll('#prodsize option'));
+
+	values.split(',').forEach(function(v) {
+  	options.find(c => c.value == v).selected = true;
+     }); 
+} 
+
+</script>
+</head>
+<body onload="setmsg()">
+	<div id="back" align="right"><a href="/updateProduct/1"><span style="color:blue;font-size:20px;">Back</span></a></div>
+	<div align="center" class = "container">
+		<form th:action="@{/doProductUpdate/1}" method=post>
+			<table>
+				<caption><h1 style="color:Darkblue">Update a Product</h1></caption>
+				<tr>
+					<td><label for="pnamelbl">ProductName</label></td>
+					<td><input type="text" name="pname" id="pname" th:value = "${product.productname}" Maxlength=50 required></td>
+					<td>
+						<label for="ctypelabel">CustomerType</label>
+						<select name="custType" id = "custType" required>
+							<option value="">--Select--</option>
+							<option value="Men">Men</option>
+							<option value="Women">Women</option>
+							<option value="Boys">Boys</option>
+							<option value="Girls">Girls</option>
+						</select>
+					</td>
+				</tr> 
+				<tr>
+					<td><label for="pdesclbl">ProductDescription</label></td>
+					<td><textarea id="proddesc" name="proddesc" rows="4" cols="30" th:text="${product.description}"></textarea></td>
+					<td>
+						<label for="categorylbl">Category</label>
+						<select name="category" id = "category" required>
+							<option value="">--Select--</option>
+							<!-- <c:forEach items="${categorylist}" var="catlist"> -->
+								<option th:each="catlist: ${categorylist}" th:value="${catlist.categoryId}" th:text="${catlist.categoryname}">
+								</option>
+							<!-- </c:forEach> -->
+						</select>
+					</td> 
+				</tr>
+				<tr>
+					
+					<td>
+						<label for="colorlbl">Color</label>
+						<select name="color" id = "color" required>
+							<option value="">--Select--</option>
+							
+								<option th:each="clist: ${colorlist}" th:value="${clist.colorId}"  th:text="${clist.colorname}"></option>
+							
+						</select>
+					</td>
+					<td>
+						<label for="Sizelbl">Size</label>
+						<p th:text="${product.getPsizes()}"></p>
+						<select name="prodsize" id = "prodsize" multiple required>
+							<option value="">--Select--</option>
+							
+								<option th:each="slist: ${sizelist}" th:value="${slist.sizeId}" th:text="${slist.sizevalue}"></option>
+							
+						</select>
+					</td>
+					<td><label for="Imgnamelbl">ImageName</label>
+					<input type="text" name="Imgname" id="Imgname" th:value = "${product.imageName}" Maxlength=50 required></td>  
+				</tr>
+				<tr>
+					
+					<td><label for="pricelbl">Price</label> 
+					<input type="text" id="Prodprice" name="Prodprice" th:value = "${product.price}" Maxlength=10 pattern="^\d+\.\d{2}$" Title = "Price must be in xxxx.xx format" required></td>
+				
+					<td><label for="tStocklbl">TotalStock</label> 
+					<input type="number" id="totalStock" name="totalStock" th:value = "${product.getPstock().getTotalStock()}" maxlength=3 min="5" max="300" required></td>
+					<td><label for="tStocklbl">AvailableStock</label> 
+					<input type="number" id="AvblStock" name="AvblStock" th:value = "${product.getPstock().getAvailStock()}" maxlength=3 min="5" max="300" required></td>
+				</tr>
+			</table>
+			<br>
+			<br>
+			<input type="submit" id="addbutton" value="  Update  ">
+			<br>
+			<input type="hidden" id ="productId" name = "productId" th:value = "${product.productId}">
+			<p th:text="${message}" style="color: black"></p>
+		</form>
+	</div>
+</body>
+</html>

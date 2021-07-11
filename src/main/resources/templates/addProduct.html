@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Add Product</title>
+<style th:inline="text">
+
+body{
+    background: url([[@{/images/shoesinnerbg.png}]]);            
+    background-size: cover;
+}
+
+textarea {
+  resize: none;
+}
+
+.container {
+        height: 400px;
+        width : 1000px;
+        margin: 0 auto;
+        margin-top: 100px;
+        border: 2px solid;
+        background-color: white;
+        align-self: center;
+        border-radius: 25px;
+    }
+    
+    label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#back
+ {
+	 margin-top: 50px;
+ 	margin-right: 200px;
+ }
+    
+</style>
+</head>
+<body>
+	<div id="back" align="right"><a href="/adminDashboard?url=products/1"><span style="color:blue;font-size:20px;">Back</span></a></div>
+	<div align="center" class = "container">
+		<form th:action="@{/saveProduct}" method=post>
+			<table>
+				<caption><h1 style="color:Darkblue">Add a Product</h1></caption>
+				<tr>
+					<td><label for="pnamelbl">ProductName</label></td>
+					<td><input type="text" name="pname" id="pname" Maxlength=50 required></td>
+					<td>
+						<label for="ctypelabel">CustomerType</label>
+						<select name="custType" id = "custType" required>
+							<option value="">--Select--</option>
+							<option value="Men">Men</option>
+							<option value="Women">Women</option>
+							<option value="Boys">Boys</option>
+							<option value="Girls">Girls</option>
+						</select>
+					</td> 
+					<td>
+						<label for="categorylbl">Category</label>
+						<select name="category" id = "category" required>
+							<option value="">--Select--</option>
+							<!-- <c:forEach items="${categorylist}" var="catlist"> -->
+								<option th:each="catlist: ${categorylist}" th:value="${catlist.categoryId}" th:text="${catlist.categoryname}">
+								</option>
+							<!-- </c:forEach> -->
+						</select>
+					</td> 
+				</tr>
+				<tr>
+					<td><label for="pdesclbl">ProductDescription</label></td>
+					<td><textarea id="proddesc" name="proddesc" rows="4" cols="30"></textarea></td>
+					<td>
+						<label for="colorlbl">Color</label>
+						<select name="color" id = "color" required>
+							<option value="">--Select--</option>
+							<!-- <c:forEach items="${colorlist}" var="colorlist"> -->
+								<option th:each="clist: ${colorlist}" th:value="${clist.colorId}"  th:text="${clist.colorname}"></option>
+							<!-- </c:forEach> -->
+						</select>
+					</td>
+					<td>
+						<label for="Sizelbl">Size</label>
+						<select name="size" id = "size" multiple required>
+							<option value="">--Select--</option>
+							<!-- <c:forEach items="${sizelist}" var="slist"> -->
+								<option th:each="slist: ${sizelist}" th:value="${slist.sizeId}" th:text="${slist.sizevalue}"></option>
+							<!-- </c:forEach> -->
+						</select>
+					</td>  
+				</tr>
+				<tr>
+					<td><label for="Imgnamelbl">ImageName</label></td>
+					<td><input type="text" name="Imgname" id="Imgname" Maxlength=50 required></td>
+					<td><label for="pricelbl">Price</label> 
+					<input type="text" id="Prodprice" name="Prodprice" Maxlength=20 pattern="^\d+\.\d{2}$" Title = "Price must be in xxxx.xx format" required></td>
+					<td><label for="tStocklbl">TotalStock</label> 
+					<input type="number" id="totalStock" name="totalStock" maxlength=3 min="5" max="300" required></td>
+				</tr>
+			</table>
+			<br>
+			<br>
+			<input type="submit" id="addbutton" value="  Save  ">
+			<br>
+			<p th:text="${message}" style="color: black"></p>
+		</form>
+	</div>
+</body>
+</html>

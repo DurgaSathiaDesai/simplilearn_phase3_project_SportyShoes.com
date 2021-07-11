@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<style th:inline="text">
+body{
+    background: url([[@{/images/shoesbg.png}]])
+    		 	no-repeat center center fixed;
+}
+
+.container {
+        height: 400px;
+        width : 350px;
+        margin-left: 1100px;
+        margin-top: 150px;
+        border: 2px solid;
+        background-color: white;
+        align-self: right; 
+        border-radius: 25px;
+    }
+</style>
+</head>
+<body>
+    <div align="center" class = "container">
+    <br>
+		<img th:src="@{/images/loginicon.jpg}" border="0" 
+    	 alt="LoginIcon" width="200" height="200"/>
+    	 <br>
+    	 <br>
+    	<form th:action="@{/processlogin}" method="post">
+    		<table>
+				<tr>
+					<td>UserName </td>
+					<td><input type="text" name="username" id="username" autofocus="autofocus" Maxlength=50 required></td>
+				</tr>
+				<tr>
+					<td>Password </td>
+					<td><input type="password" name="password" id="password" Maxlength=50 required></td>
+				</tr>
+			</table>
+			<br>
+			<input type="submit" id="loginbutton" value="  Login  ">
+			<br>
+			<p th:text="${error}" style="color: red"></p>
+			<p th:text="${message}" style="color: black"></p>
+			<p th:if="${param.logout!=null}" style="color: green">You have successfully logged out.!</p>
+   	 	</form>
+    </div>
+</body>
+</html>

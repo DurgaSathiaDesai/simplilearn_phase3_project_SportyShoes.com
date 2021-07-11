@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Display Products</title>
+<style th:inline="text">
+li a.ex1:link, a.ex1:visited {
+	background-color:#bbb;
+	padding: 5px 10px;
+	text-align: center;
+	text-decoration: none; 
+	border-radius: 5px;
+	border-right: 0.5px solid grey; 
+	display: inline-block;
+}
+
+a.ex1:hover, a.ex1:active {
+	background-color: #33B2FF;
+}
+
+ul {
+  list-style-type: none;
+  list-style-position: inside;
+  }
+  
+  li {
+  float: left;
+}
+
+#producttable
+{
+	border : solid 1px black;
+	background-color : #d3d3d3;
+}
+</style>
+<script th:inline="javascript">
+function setmsg()
+{
+	var msg ="[(${result})]";
+	document.getElementById("msg").innerHTML = msg;
+	var custtype = "[(${custtype})]";
+	var valueAll = document.getElementById("all").value;
+	var valueMen = document.getElementById("Men").value;
+	var valueWomen = document.getElementById("Women").value;
+	var valueBoys = document.getElementById("Boys").value;
+	var valueGirls = document.getElementById("Girls").value;
+	if(custtype == valueAll)
+		document.getElementById("all").checked = true;
+	if(custtype == valueMen)
+		document.getElementById("Men").checked = true;
+	if(custtype == valueWomen)
+		document.getElementById("Women").checked = true;
+	if(custtype == valueBoys)
+		document.getElementById("Boys").checked = true;
+	if(custtype == valueGirls)
+		document.getElementById("Girls").checked = true;
+} 
+</script>
+</head>
+<body onload="setmsg()">
+	<div align="center">
+	<div style="padding: 20px" id = "link" align="center">
+		<ul>
+			<li><a href="/addProduct" class="ex1" target="_parent"><span style="color:dark grey;font-size:18px;">Add Products</span></a></li> 
+			<li><a href="/updateProduct/1" class="ex1" target="_parent"><span style="color:dark grey;font-size:18px;">Update Products</span></a></li> 
+			<li><a href="/deleteProduct/1" class="ex1" target="_parent"><span style="color:dark grey;font-size:18px;">Delete Products</span></a></li>
+		</ul>
+	</div>
+	<br>
+	<input type="radio" id="all" name="custType" value="all" onclick="location.href='/products/1?custType=all'">
+		<label for="AllLabel">All</label>
+	<input type="radio" id="Men" name="custType" value="Men" onclick="location.href='/products/1?custType=Men'">
+		<label for="MenLabel">Men</label>
+	<input type="radio" id="Women" name="custType" value="Women" onclick="location.href='/products/1?custType=Women'">
+		<label for="WomenLabel">Women</label>
+	<input type="radio" id="Boys" name="custType" value="Boys" onclick="location.href='/products/1?custType=Boys'">
+		<label for="BoysLabel">Boys</label>
+	<input type="radio" id="Girls" name="custType" value="Girls" onclick="location.href='/products/1?custType=Girls'">
+		<label for="GirlsLabel">Girls</label>
+	<br>
+  	<div th:unless="${#lists.isEmpty(productlist)}"><h2>List of Products</h2>
+		<table id="producttable" border="1" cellpadding="5">
+	    	<tr>
+	    		<th>Product ID</th>
+	    		<th>Product Name</th>
+	    		<th>Product Description</th>
+	    		<th>Customer Type</th>
+	    		<th>Category</th>
+	    		<th>Color</th>
+	    		<th>Size</th>
+	    		<th>Image</th>
+	    		<th>price</th>
+	    		<th>Total Stock</th>
+	    		<th>Available Stock</th>
+	    		<th>Product Status</th>
+	    	</tr>
+	     	<tr th:each="plist: ${productlist}">
+	     		<td th:text="${plist.productId}"></td>
+	     		<td th:text="${plist.productname}"></td>
+	     		<td th:text="${plist.description}"></td>
+	     		<td th:text="${plist.custType}"></td>
+	     		<td th:text="${plist.getPcategory().getCategoryname()}"></td>
+   		 		<td th:text="${plist.getPcolor().getColorname()}"></td>
+   		 		<td th:text="${plist.getPsizes()}"></td>
+   		 		<td th:text="${plist.imageName}"></td>
+   		 		<td th:text="${plist.price}"></td>
+   		 		<td th:text="${plist.getPstock().getTotalStock()}"></td>
+   		  		<td th:text="${plist.getPstock().getAvailStock()}"></td>
+   		 		<td th:text="${plist.status}"></td>
+	     	</tr>
+	    </table>
+	    <br>
+	    <span th:each="i: ${#numbers.sequence(1, totalPages)}" style="color:blue;font-size:24px;">
+    		<a th:if="${currentPage != i}" th:href="@{'/products/' + ${i} + '?custType=' + ${custtype}}">[[${i}]]</a>
+    	<span th:unless="${currentPage != i}">[[${i}]]</span>
+    	&nbsp;
+		</span>
+	    </div>
+	    <br>
+	    <br>
+	     <span id="msg" style="color:black;font-size:16px;font-weight: bold;"></span>
+	</div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>SelectProductToUpdate</title>
+<style th:inline="text">
+
+body{
+    background: url([[@{/images/shoesinnerbg.png}]]);            
+    background-size: cover;
+}
+
+#back
+ {
+	 margin-top: 50px;
+ 	margin-right: 200px;
+ }
+ 
+ #producttable
+{
+	border : solid 1px black;
+	background-color : #d3d3d3;
+}
+</style>
+<script th:inline="javascript">
+function setmsg()
+{
+	var msg ="[(${result})]";
+	document.getElementById("msg").innerHTML = msg;
+	var custtype = "[(${custtype})]";
+	var valueAll = document.getElementById("all").value;
+	var valueMen = document.getElementById("Men").value;
+	var valueWomen = document.getElementById("Women").value;
+	var valueBoys = document.getElementById("Boys").value;
+	var valueGirls = document.getElementById("Girls").value;
+	if(custtype == valueAll)
+		document.getElementById("all").checked = true;
+	if(custtype == valueMen)
+		document.getElementById("Men").checked = true;
+	if(custtype == valueWomen)
+		document.getElementById("Women").checked = true;
+	if(custtype == valueBoys)
+		document.getElementById("Boys").checked = true;
+	if(custtype == valueGirls)
+		document.getElementById("Girls").checked = true;
+} 
+
+function validateForm() 
+{
+	var ele =document.getElementsByName("productId");
+	var selected = false;
+	for(var i=0;i<ele.length;i++)
+	{
+		if(ele[i].checked == true)
+		{
+			selected = true;
+			break;
+		}
+	}
+	if(selected == false)
+	{
+		document.getElementById("error").innerHTML = "*Please select any product to edit!";
+		return false;
+	}
+}
+</script>
+</head>
+<body onload="setmsg()">
+	<div id="back" align="right"><a href="/adminDashboard?url=products/1"><span style="color:blue;font-size:20px;">Back</span></a></div>
+	<div align="center">
+		<input type="radio" id="all" name="custType" value="all" onclick="location.href='/updateProduct/1?custType=all'">
+		<label for="AllLabel">All</label>
+		<input type="radio" id="Men" name="custType" value="Men" onclick="location.href='/updateProduct/1?custType=Men'">
+		<label for="MenLabel">Men</label>
+		<input type="radio" id="Women" name="custType" value="Women" onclick="location.href='/updateProduct/1?custType=Women'">
+		<label for="WomenLabel">Women</label>
+		<input type="radio" id="Boys" name="custType" value="Boys" onclick="location.href='/updateProduct/1?custType=Boys'">
+		<label for="BoysLabel">Boys</label>
+		<input type="radio" id="Girls" name="custType" value="Girls" onclick="location.href='/updateProduct/1?custType=Girls'">
+		<label for="GirlsLabel">Girls</label>
+		<form th:action="@{/processupdate}" method=post onsubmit ="return validateForm()">
+		<div th:unless="${#lists.isEmpty(productlist)}"><h2>Select a product to Update</h2>
+		<table id="producttable" border="1" cellpadding="5">
+	    	<tr>
+	    		<th>Product ID</th>
+	    		<th>Product Name</th>
+	    		<th>Product Description</th>
+	    		<th>Customer Type</th>
+	    		<th>Category</th>
+	    		<th>Color</th>
+	    		<th>Size</th>
+	    		<th>Image</th>
+	    		<th>price</th>
+	    		<th>Total Stock</th>
+	    		<th>Available Stock</th>
+	    		<th>Product Status</th>
+	    	</tr>
+	     	<tr th:each="plist: ${productlist}">
+	     		<td><input type="radio" id="${plist.productId}" name="productId" th:value="${plist.productId}"/>
+	     		<label for="prodLabel" th:text="${plist.productId}"></label>
+	     		</td>
+	     		<!-- <td th:text="${plist.productId}"></td> -->
+	     		<td th:text="${plist.productname}"></td>
+	     		<td th:text="${plist.description}"></td>
+	     		<td th:text="${plist.custType}"></td>
+	     		<td th:text="${plist.getPcategory().getCategoryname()}"></td>
+   		 		<td th:text="${plist.getPcolor().getColorname()}"></td>
+   		 		<td th:text="${plist.getPsizes()}"></td>
+   		 		<td th:text="${plist.imageName}"></td>
+   		 		<td th:text="${plist.price}"></td>
+   		 		<td th:text="${plist.getPstock().getTotalStock()}"></td>
+   		  		<td th:text="${plist.getPstock().getAvailStock()}"></td>
+   		 		<td th:text="${plist.status}"></td>
+	     	</tr>
+	    </table>
+	    <br>
+	    <br>
+	    <input type="submit" id="editbutton" value="  Edit  ">
+	    <br>
+	    <span th:each="i: ${#numbers.sequence(1, totalPages)}" style="color:blue;font-size:24px;">
+    		<a th:if="${currentPage != i}" th:href="@{'/updateProduct/' + ${i} + '?custType=' + ${custtype}}">[[${i}]]</a>
+    	<span th:unless="${currentPage != i}">[[${i}]]</span>
+    	&nbsp;
+		</span>
+	    </div>
+	    <span id="error" style="color:red"></span>
+	    </form>
+	     <span id="msg" style="color:black;font-size:16px;font-weight: bold;"></span>
+	</div>
+</body>
+</html>

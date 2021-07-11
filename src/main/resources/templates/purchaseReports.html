@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Purchase Reports</title>
+<style th:inline="text">
+body{
+    background: url([[@{/images/shoesinnerbg.png}]]);
+                
+    background-size: cover;
+}
+
+#back
+ {
+	 margin-top: 50px;
+ 	margin-right: 200px;
+ }
+ 
+ #reporttable
+{
+	border : solid 1px black;
+	background-color : #d3d3d3;
+}
+</style>
+<script th:inline="javascript">
+function enablefilter()
+{
+	document.getElementById("orderdate").disabled=false;
+	document.getElementById("category").disabled=false;
+	document.getElementById("getbutton").disabled=false;
+	
+	document.getElementById("all").checked = false;
+}
+
+function disablefilter()
+{
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
+	var yyyy = today.getFullYear();
+	if (dd < 10) {
+		dd = '0' + dd
+	}
+	if (mm < 10) {
+		mm = '0' + mm
+	}
+
+	today = yyyy + '-' + mm + '-' + dd;
+	document.getElementById("orderdate").setAttribute("max", today);
+	
+	document.getElementById("orderdate").disabled=true;
+	document.getElementById("category").disabled=true;
+	document.getElementById("getbutton").disabled=true;
+	
+	
+	var msg ="[(${result})]";
+	document.getElementById("msg").innerHTML = msg;
+	
+	
+	var reporttype = "[(${reportFor})]";
+	var valueAll = document.getElementById("all").value;
+	var valueFilter = document.getElementById("filter").value;
+	
+	if(reporttype == valueAll)
+		document.getElementById("all").checked = true;
+	if(reporttype == valueFilter)
+	{
+		document.getElementById("filter").checked = true;
+		document.getElementById("orderdate").disabled=false;
+		document.getElementById("category").disabled=false;
+		document.getElementById("getbutton").disabled=false;
+	}
+}
+
+function callreports()
+{
+	document.getElementById("orderdate").disabled=true;
+	document.getElementById("category").disabled=true;
+	document.getElementById("getbutton").disabled=true;
+	
+	location.href="/purchaseReports/1?reportFor=all";
+}
+</script>
+</head>
+<body onload="disablefilter()">
+	<div id="back" align="right"><a href="/adminDashboard"><span style="color:blue;font-size:20px;">Back</span></a></div>
+	<div align="center">
+	<h1>Purchase Reports</h1>
+	<input type="radio" id="all" name="reportFor" value="all" onclick="callreports()">
+		<label for="AllLabel">All</label>
+	<input type="radio" id="filter" name="reportfilter" value="filter" onclick="enablefilter()">
+		<label for="MenLabel">FilterbyDateandCategory</label><br>
+	<form th:action="@{/purchaseReportsByfilter/1}" method=post>
+		<label for="date">Order Date</label> 	
+		<input type="date" id="orderdate" name="orderdate" required></td>
+		<label for="categorylbl">Category</label>
+		<select name="category" id = "category" required>
+			<option value="">--Select--</option>
+			<option th:each="catlist: ${categorylist}" th:value="${catlist.categoryId}" th:text="${catlist.categoryname}">
+			</option>
+		</select>
+		<input type="submit" id="getbutton" value="  Get purchases  ">
+	</form>
+	<div th:unless="${#lists.isEmpty(orderlist)}"><h2>List of Purchases</h2>
+		<table id="reporttable" border="1" cellpadding="5">
+	    	<tr>
+	    		<th>Order ID</th>
+	    		<th>Order Date</th>
+	    		<th>Username</th>
+	    		<th>Shipping Address</th>
+	    		<th>Product Details</th>
+	    		<th>Total Items</th>
+	    		<th>Amount</th>
+	    		<th>OrderStatus</th>
+	    	</tr>
+	     	<tr th:each="order: ${orderlist}">
+	     		<td th:text="${order.orderId}"></td>
+	     		<td th:text="${order.orderDate}"></td>
+	     		<td th:text="${order.getUser().firstname} + ${order.getUser().lastname}"></td>
+	     		<td th:text="${order.shippingAddr}"></td>
+	     		<td> 
+	     		
+	     		<ul th:each="productorder : ${order.getProductOrders()}">
+	     			<li th:if = "${category}==0" th:text = "${productorder.getProductname()} + '--' + ${productorder.getCustType()} + ' , ' + ${productorder.getCategoryname()} + ' , ' + ${productorder.getColorname()} + ' , ' + ${productorder.getPrimaryKey().getSizevalue()} + ' - Qty : ' + ${productorder.getQuantity()}"></li>
+	     			<li th:if = "${productorder.getCategoryname()} == ${categoryname}" th:text = "${productorder.getProductname()} + '--' + ${productorder.getCustType()} + ' , ' + ${productorder.getCategoryname()} + ' , ' + ${productorder.getColorname()} + ' , ' + ${productorder.getPrimaryKey().getSizevalue()} + ' - Qty : ' + ${productorder.getQuantity()}"></li>
+	     		</ul>
+	     		
+	     		</td>
+   		 		<td th:text="${order.totalQty}"></td>
+   		 		<td th:text="${order.amount}"></td>
+   		 		<td th:text="${order.orderStatus}"></td>
+	     	</tr>
+	    </table>
+	    <br>
+	    <div th:if = "${page == 0}">
+	    <span th:each="i: ${#numbers.sequence(1, totalPages)}" style="color:blue;font-size:24px;">
+    		<a th:if="${currentPage != i}" th:href="@{'/purchaseReports/' + ${i}}">[[${i}]]</a>
+    	<span th:unless="${currentPage != i}">[[${i}]]</span>
+    	&nbsp;
+		</span>
+		</div>
+		<div th:if = "${page == 1}">
+	    <span th:each="i: ${#numbers.sequence(1, totalPages)}" style="color:blue;font-size:22px;">
+    		<a th:if="${currentPage != i}" th:href="@{'/purchaseReportsByfilter/' + ${i}}">[[${i}]]</a>
+    	<span th:unless="${currentPage != i}">[[${i}]]</span>
+    	&nbsp;
+		</span>
+		</div>
+	    </div>
+	    <br>
+	    <br>
+	    <span id="msg" style="color:black;font-size:16px;font-weight: bold;"></span>
+	</div>
+</body>
+</html>
